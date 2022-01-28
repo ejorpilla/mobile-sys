@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="mobile-sapi-test-suite-put-assistanceapp-device-token-info.xml" />
+	<import doc:name="Import" doc:id="b47e327e-7adc-46ff-9446-b05b682ff104" file="munit-global.xml" />
+	<munit:before-test name="mobile-sapi-test-suite-put-assistanceapp-device-token-info:before-test" doc:id="13c56b81-a6fe-4e4d-a27c-c32015f6cf8f" >
+		<flow-ref doc:name="munit-global:\set-metadata" doc:id="1104d65a-efa3-4496-ac73-73621b906130" name="munit-global:\set-metadata"/>
+	</munit:before-test>
+	<munit:test name="mobile-sapi-test-suite-put:\assistanceApp\deviceTokenInfo\(deviceId):application\json:test-success" doc:id="e9e8d6ef-05d1-4196-9cf0-6ac4a63881a0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock - MS SQL SP Get Assistance App Device Info" doc:id="e2df5a74-63df-447f-8022-178f3c87bbdb" processor="db:stored-procedure">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="MS SQL SP Get Assistance App Device Info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('sample_data/response-get-assistanceapp-device-info.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock - MS SQL SP Put Assistance App Device Token Info" doc:id="535b80ae-fd79-4cc8-ad6d-ae23828d1e9c" processor="db:stored-procedure">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="MS SQL SP Put Assistance App Device Token Info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="6323bbae-2075-4a20-bfe3-59ecb4cdb35d">
+				<munit:payload value='{
+  "appId":"1",
+  "token":"Token5.1"
+}' encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value='{
+   "uriParams": {
+		"deviceId": "1"
+   }
+}' encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="put:\assistanceApp\deviceTokenInfo\(deviceId):application\json:mobile-sapi-config" doc:id="f8a9ce5c-613b-49f6-9e0c-7ff029b73584" name="put:\assistanceApp\deviceTokenInfo\(deviceId):application\json:mobile-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call - Set Device Id Exists Response Payload" doc:id="dd3a2713-c9a3-4222-a55d-ad7e2be4bde9" processor="ee:transform">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Set Device Id Exists Response Payload" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call - Log End Put Assistance App Device Token Info" doc:id="be375546-1da4-4c3f-917a-79aca3b68a27" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Put Assistance App Device Token Info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mobile-sapi-test-suite-put:\assistanceApp\deviceTokenInfo\(deviceId):test-general-error" doc:id="ec188bd3-5943-4fc2-9d1b-7b5c9c142298" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock - MS SQL SP Get Assistance App Device Info" doc:id="37e70d0b-af18-40a3-92c2-9d2893f7aac6" processor="db:stored-procedure" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="MS SQL SP Get Assistance App Device Info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="#['HTTP:INTERNAL_SERVER_ERROR']" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0c85ee57-19ca-4a48-a130-697ff15ff88e">
+				<munit:payload value='{
+  "appId":"1",
+  "token":"Token5.1"
+}' encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value='{
+   "uriParams": {
+		"deviceId": "1"
+   }
+}' encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="put:\assistanceApp\deviceTokenInfo\(deviceId):application\json:mobile-sapi-config" doc:id="5f53ef8d-b363-4da1-bf4e-0afe6b023184" name="put:\assistanceApp\deviceTokenInfo\(deviceId):application\json:mobile-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call Common Error Handler" doc:id="5967c0a2-1d62-4d62-83dc-f87a99de8c6e" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Internal Server Error Payload, HTTP Status Var" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+</mule>

@@ -1,0 +1,20 @@
+#%RAML 1.0 Trait
+
+headers:
+  X-Correlation-Id:
+    type: string
+    required: false
+    description: |
+      The associated correlation id of the request, i.e. from experience layer
+
+  X-Source-Id:
+    type: string
+    required: false
+    description: |
+      The caller's Service ID if applicable
+
+  correlationid:
+    type: string
+    required: false
+    description: |
+      Backward compatible correlationid header

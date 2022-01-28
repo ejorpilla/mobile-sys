@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="apikit-test-suite.xml" />
+	<import doc:name="Import" doc:id="7b166471-de66-4ee1-8568-a83b85adabaf" file="munit-global.xml" />
+	<munit:test name="main-test-apikit-bad-request" description="Test APIKIT Bad Request" doc:id="bd047bd3-080f-41e7-b097-c234e4b6a9ec" tags="APIKIT:BAD_REQUEST" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="e4d830f5-369f-40a8-93d0-f6acba9cc09c" processor="apikit:router" >
+				<munit-tools:then-return >
+					<munit-tools:error typeId='#["APIKIT:BAD_REQUEST"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="02ed00f7-cb29-4b6a-ad5f-1127de736e08">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="16ff9a73-44fa-4dcd-9fa3-f292f0fd43ce" name="mobile-sapi-main" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 400" doc:id="51fb5797-2e0d-4f46-881b-e23dfc16ccd9" expression="#[payload.status]" is="#[MunitTools::equalTo('400')]" message="Payload Error Code should be 400" />
+			<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="375b7990-390c-4ecb-bc34-e5cbea329404" processor="mule-utils-logger:logger" times="1" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test-apikit-not-found" description="Test APIKIT Not Found" doc:id="cbccb4bd-8531-4066-8cc9-e8a7281b189d" tags="APIKIT:NOT_FOUND" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="0ccbc621-7a58-41d7-b317-025800938b44" processor="apikit:router" >
+				<munit-tools:then-return >
+					<munit-tools:error typeId='#["APIKIT:NOT_FOUND"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="ce43cd3d-59f7-4d94-8cc3-4cdb31e60304">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="c0c7e92d-c4e4-437f-b7f2-67e497131cd4" name="mobile-sapi-main" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 404" doc:id="46ded701-23af-4515-8762-b1b133096294" expression="#[payload.status]" is="#[MunitTools::equalTo('404')]" message="Payload Error Code should be 404" />
+			<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="1d922065-eaa5-418f-b651-30dc85e5811d" processor="mule-utils-logger:logger" times="1" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test-apikit-method-not-allowed" description="Test APIKIT:METHOD_NOT_ALLOWED" doc:id="7ed2890e-79a0-422a-9787-eeb3f56b15ea" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED" tags="APIKIT:METHOD_NOT_ALLOWED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="fea3f527-5066-4c84-afda-16f6a75e3711" processor="apikit:router" >
+				<munit-tools:then-return >
+					<munit-tools:error typeId='#["APIKIT:METHOD_NOT_ALLOWED"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="6efce564-4254-4500-a8bf-38b08bf85a87">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="c1624c85-985c-4c2a-b930-96f9a7ad862a" name="mobile-sapi-main" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 405" doc:id="777a456e-6d07-4119-ba5d-f98c0b257304" expression="#[payload.status]" is="#[MunitTools::equalTo('405')]" message="Payload Error Code should be 405" />
+			<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="0db8408e-8ced-4e48-9c52-ce71f80c1722" processor="mule-utils-logger:logger" times="1" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test-apikit-not-acceptable" description="Test APIKIT:NOT_ACCEPTABLE" doc:id="afadd2cd-2149-40a8-97c4-8badae49e023" expectedErrorType="APIKIT:NOT_ACCEPTABLE" tags="APIKIT:NOT_ACCEPTABLE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="b22ed4c4-f14a-4a9d-aa53-f265d27302e1" processor="apikit:router" >
+				<munit-tools:then-return >
+					<munit-tools:error typeId='#["APIKIT:NOT_ACCEPTABLE"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="91e63ed3-03ed-4eaf-af66-3e2cdfffce95">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="e86ecefd-0e9e-478e-951b-a118f1b9b991" name="mobile-sapi-main" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 406" doc:id="4ca79c38-0560-48bf-a5b0-69035d141502" expression="#[payload.status]" is="#[MunitTools::equalTo('406')]" message="Payload Error Code should be 406" />
+			<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="64689945-bcd2-498f-8f84-be9cb1d2478c" processor="mule-utils-logger:logger" times="1" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test-apikit-unsupported-media-type" description="Test APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="a36b0f87-47c6-4921-a9a6-633c30e22ac3" expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE" tags="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="779fe73d-fa10-4a4b-b47c-a900836efc43" processor="apikit:router" >
+				<munit-tools:then-return >
+					<munit-tools:error typeId='#["APIKIT:UNSUPPORTED_MEDIA_TYPE"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="6208e879-c090-4b52-832f-85c0ca1c7e5d">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="ea4cfc41-a083-41af-aff6-6b3665273516" name="mobile-sapi-main" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 415" doc:id="9ddd0bea-33c5-41a0-be80-32bfba4d1dc0" expression="#[payload.status]" is="#[MunitTools::equalTo('415')]" message="Payload Error Code should be 415" />
+			<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="69ae6570-f16b-433b-90fd-f07d441acd7a" processor="mule-utils-logger:logger" times="1" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test-apikit-not-implemented" description="Test APIKIT:NOT_IMPLEMENTED" doc:id="c87c3839-ae6d-4d2c-a08e-b346d77bfa38" expectedErrorType="APIKIT:NOT_IMPLEMENTED" tags="APIKIT:NOT_IMPLEMENTED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="15855227-19cc-46e5-8eda-517345935cd9" processor="apikit:router" >
+				<munit-tools:then-return >
+					<munit-tools:error typeId='#["APIKIT:NOT_IMPLEMENTED"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="cd5a4a34-7d74-4c76-95e4-9d502e41244f">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="8fd0aaec-3d4a-4140-9f63-3c71c5babbae" name="mobile-sapi-main" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 501" doc:id="71fadd3f-74c0-4faf-959b-038961095ab3" expression="#[payload.status]" is="#[MunitTools::equalTo('501')]" message="Payload Error Code should be 501" />
+			<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="d02d2948-2455-4b56-84d6-cee89c837f88" processor="mule-utils-logger:logger" times="1" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="test-apikit-internal-server-error" description="Test Internal Server Error" doc:id="fb2fdee6-c9b8-4596-a7b6-e84e98da5a15" expectedErrorType="HTTP:INTERNAL_SERVER_ERROR" tags="HTTP:INTERNAL_SERVER_ERROR">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="b8577aef-913b-4dd7-a00e-88f7f45f3be6" processor="apikit:router">
+					<munit-tools:then-return>
+						<munit-tools:error typeId='#["HTTP:INTERNAL_SERVER_ERROR"]' />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+			<munit:set-event doc:name="Set Event" doc:id="a6b95282-5fc0-48e5-a8ab-0534a1851021">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="a783a9db-085a-4548-b016-588d3a1db756" name="mobile-sapi-main" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 500" doc:id="59323651-8192-437f-911d-b0ca08894b75" expression="#[payload.status]" is="#[MunitTools::equalTo('500')]" message="Payload Error Code should be 500" />
+				<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="03123ea6-dec0-4d80-bbbc-6db9949ba9bd" processor="mule-utils-logger:logger" times="1" />
+			</munit:validation>
+	</munit:test>
+	<munit:test name="test-apikit-timeout-error" description="Test Timeout Error" doc:id="f899f8a5-ebb8-4184-937b-b9879d75b743" expectedErrorType="HTTP:TIMEOUT" tags="HTTP:TIMEOUT">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="b8ae7491-672e-4db9-8323-b65acc2b0d85" processor="apikit:router">
+					<munit-tools:then-return>
+						<munit-tools:error typeId='#["HTTP:TIMEOUT"]' />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+			<munit:set-event doc:name="Set Event" doc:id="0b516baa-0b34-4ab2-8bd6-b2cf1d441815">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="e13e0896-f62a-4ce0-b8e9-c4b6f896e2de" name="mobile-sapi-main" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 408" doc:id="e821d2e2-ac7f-4fe8-b92e-ecccc963535f" expression="#[payload.status]" is="#[MunitTools::equalTo('408')]" message="Payload Error Code should be 408" />
+				<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="bc1a9019-33d0-4a22-a959-199111bc6fd9" processor="mule-utils-logger:logger" times="1" />
+			</munit:validation>
+		</munit:test>
+	<munit:test name="test-apikit-unauthorized-error" description="Test Uauthorized Error" doc:id="2dfe85f5-fc30-4c9e-91fa-a4fb0bcda67e" expectedErrorType="HTTP:UNAUTHORIZED" tags="HTTP:UNAUTHORIZED">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="fa29a9b4-c668-4a36-bc1d-119a0d33f311" processor="apikit:router">
+					<munit-tools:then-return>
+						<munit-tools:error typeId='#["HTTP:UNAUTHORIZED"]' />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+			<munit:set-event doc:name="Set Event" doc:id="2754d5bc-8ff9-4c17-bf1e-4e7be17c99e8">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="f850f43b-9a41-413f-b199-e679c15f7083" name="mobile-sapi-main" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 401" doc:id="0b227d55-d571-406b-9fa8-36a179b02f7c" expression="#[payload.status]" is="#[MunitTools::equalTo('401')]" message="Payload Error Code should be 401" />
+				<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="a5baed66-a04b-4880-adde-7d5ba64ebd08" processor="mule-utils-logger:logger" times="1" />
+			</munit:validation>
+		</munit:test>
+	<munit:test name="test-apikit-forbidden-error" description="Test Forbidden Error" doc:id="c5c11c47-ab0f-4bf4-ad66-45591a4af6c1" expectedErrorType="HTTP:FORBIDDEN" tags="HTTP:FORBIDDEN">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="4210260d-6e36-4757-a9cc-fbbc3906bc16" processor="apikit:router">
+					<munit-tools:then-return>
+						<munit-tools:error typeId='#["HTTP:FORBIDDEN"]' />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+			<munit:set-event doc:name="Set Event" doc:id="b787e84b-cb9f-4626-b1cf-feee44de46c5">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="cfe7dd16-c030-4203-b27b-0451e0e1632a" name="mobile-sapi-main" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 403" doc:id="aa4b79f6-7ebd-4f49-8104-1c814848c18e" expression="#[payload.status]" is="#[MunitTools::equalTo('403')]" message="Payload Error Code should be 403" />
+				<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="cbb68130-04fd-4020-88cb-c5f2b07e50c2" processor="mule-utils-logger:logger" times="1" />
+			</munit:validation>
+		</munit:test>
+		<munit:test name="test-apikit-too-many-requests-error" description="Test Too Many Requests Error" doc:id="ecd183f0-6bbf-4c6f-b041-ff7c2f69eb5d" expectedErrorType="HTTP:TOO_MANY_REQUESTS" tags="HTTP:TOO_MANY_REQUESTS">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="4887fa7d-14fb-4725-8613-f9dee9772c33" processor="apikit:router">
+					<munit-tools:then-return>
+						<munit-tools:error typeId='#["HTTP:TOO_MANY_REQUESTS"]' />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+			<munit:set-event doc:name="Set Event" doc:id="24ca41bf-9346-46ab-bac1-2cc4d959a1db">
+				<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="mobile-sapi-main" doc:id="e8300c21-596d-48d4-a156-1d5133604de7" name="mobile-sapi-main" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 429" doc:id="1daa6af6-316b-4f58-99ab-9f662e96a019" expression="#[payload.status]" is="#[MunitTools::equalTo('429')]" message="Payload Error Code should be 429" />
+				<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="ac833b42-cc30-446f-ae07-5ffd05d9091a" processor="mule-utils-logger:logger" times="1" />
+			</munit:validation>
+		</munit:test>
+	<munit:test name="test-apikit-connectivity-error" description="Test Connectivity Error" doc:id="7d696177-1632-4316-a11c-3d13d9c26120" tags="CONNECTIVITY" expectedErrorType="CONNECTIVITY">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="f25980ce-aea5-45ea-8995-dab2b4c53e49" processor="apikit:router">
+					<munit-tools:then-return>
+						<munit-tools:error typeId='#["CONNECTIVITY"]' />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="ef5a00d3-9927-4524-94d9-fc79cf224ac3">
+					<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+				</munit:set-event>
+				<flow-ref doc:name="mobile-sapi-main" doc:id="0b35c9b0-4255-4ac7-9375-c4bcc5d19cb9" name="mobile-sapi-main" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 503" doc:id="035d2f7a-4206-4684-beef-b174b9fcce08" expression="#[payload.status]" is="#[MunitTools::equalTo('503')]" message="Payload Error Code should be 503" />
+				<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="72e379f9-a570-4f61-a1d8-3cfa2a1c0636" processor="mule-utils-logger:logger" times="1" />
+			</munit:validation>
+		</munit:test>
+		
+		<munit:test name="test-apikit-oauth-connectivity-error" description="Test OAUTH Connectivity Error" doc:id="353c2c4f-820b-4e79-b324-ff5185508fc5" tags="CONNECTIVITY" expectedErrorType="HTTP:SECURITY">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Call APIKit Router" doc:id="465577ff-00ca-4f9f-a394-48d0ef2ab134" processor="apikit:router">
+					<munit-tools:then-return>
+						<munit-tools:error typeId='#["HTTP:SECURITY"]' />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<munit:set-event doc:name="Set Event" doc:id="3d3bb411-0dab-410f-8254-97cc31b22a1d">
+					<munit:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				<munit:attributes value='#[{headers:{"X-Correlation-Id":"munit-test","x-source-id":"munit"}}]' />
+				</munit:set-event>
+				<flow-ref doc:name="mobile-sapi-main" doc:id="a232039a-e0e3-4650-9196-9084ab31f954" name="mobile-sapi-main" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that Payload Error Code is equal to 500" doc:id="a6eb828e-dbee-46a8-98f3-1f8894408215" expression="#[payload.status]" is="#[MunitTools::equalTo('500')]" message="Payload Error Code should be 500" />
+				<munit-tools:verify-call doc:name="Verify 1 Logger call" doc:id="5d2d48a0-e5a3-4269-a50d-569a18f2f750" processor="mule-utils-logger:logger" times="1" />
+			</munit:validation>
+		</munit:test>
+</mule>

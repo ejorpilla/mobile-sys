@@ -1,0 +1,18 @@
+{
+   "tracking-id":"d2b32ca0-483f-11ec-a582-02b2a82a66e8",
+   "notifications":[
+      {
+         "notificationCenterId":1,
+         "individualId":"1",
+         "notificationEventId":1,
+         "notificationMessage":"notificationMessage",
+         "notificationDataTags":"notificationDataTags",
+         "notificationTranslationTags":"notificationTranslationTags",
+         "noticationReadInd":true,
+         "insertDate":"2021-01-01",
+         "updateDate":"2021-01-01",
+         "insertedBy":"2021-01-01",
+         "updatedBy":"2021-01-01"
+      }
+   ]
+}

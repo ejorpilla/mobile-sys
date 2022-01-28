@@ -1,0 +1,12 @@
+{
+   "tracking-id":"d2b32ca0-483f-11ec-a582-02b2a82a66e8",
+   "notificationEvents":[
+      {
+         "notificationEventId":1,
+         "eventName":"Event Name",
+         "eventDataTags": "[{ConversationID}]",
+         "eventTranslationTags": "CHAT_NEW_CHAT_MESSAGE",
+         "isActive":true
+      }
+   ]
+}

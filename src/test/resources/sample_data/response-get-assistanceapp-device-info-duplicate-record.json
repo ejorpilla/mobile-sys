@@ -1,0 +1,26 @@
+{
+   "resultSet1":[
+      {
+         "OSLocationServices":"LS",
+         "MembershipNumber":"TEST321",
+         "AECEnabled":true,
+         "Model":"HTC",
+         "IndividualId":"46E0268E-7296-41BB-8761-BF5B21A37A5B",
+         "OSVersion":"4.0.1",
+         "Locale":"PH",
+         "DeviceId":"1",
+         "Platform":"And"
+      },
+      {
+         "OSLocationServices":"LS",
+         "MembershipNumber":"TEST321",
+         "AECEnabled":true,
+         "Model":"HTC",
+         "IndividualId":"46E0268E-7296-41BB-8761-BF5B21A37A5B",
+         "OSVersion":"4.0.1",
+         "Locale":"PH",
+         "DeviceId":"1",
+         "Platform":"And"
+      }
+   ]
+}

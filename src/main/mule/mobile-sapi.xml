@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <apikit:config name="mobile-sapi-config" api="mobile-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="mobile-sapi-main">
+        <http:listener config-ref="mobile-sapi-httplistener-config" path="${mobile-sapi.basepath}" allowedMethods="${mobile-sapi.allowedmethods}">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="Set metadata Vars" doc:id="2e330260-f0ba-4777-bf9f-595cc42e29fb">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="correlationId"><![CDATA[%dw 2.0
+output application/json
+---
+if(attributes.headers['x-correlation-id'] !=null) 
+	attributes.headers['x-correlation-id']
+else if(attributes.headers['correlationid'] !=null) 
+	attributes.headers['correlationid']
+else
+	correlationId]]></ee:set-variable>
+                <ee:set-variable variableName="metadata"><![CDATA[%dw 2.0
+output application/json
+var clientId = attributes.headers.'clientId' default ""
+---
+{
+	clientId: clientId,
+	clientSecret: attributes.headers.'clientSecret' default "",
+	requestPath: attributes.requestPath default ""
+}]]></ee:set-variable>
+                <ee:set-variable variableName="errors"><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<logger level="INFO" doc:name="Log Start Mobile SAPI" doc:id="eee108cd-60fc-4c70-8e36-d2969c7aaf1e" message=" #[vars.correlationid]  |  Log Start Mobile SAPI | Request Path: #[vars.metadata.requestPath]" category="${log.package.any}" />
+        <apikit:router config-ref="mobile-sapi-config" />
+        <logger level="INFO" doc:name="Log End Mobile SAPI" doc:id="c6fccf54-7d7d-4d17-99ac-27fe8f3fbf9a" message=" #[vars.correlationid]  |  Log End Mobile SAPI | Request Path: #[vars.metadata.requestPath]" category="${log.package.any}" />
+        <error-handler ref="apikit-errorhandler" />
+    </flow>
+    <flow name="put:\assistanceApp\deviceInfo\(deviceId):application\json:mobile-sapi-config">
+        <ee:transform doc:name="Set Request Params" doc:id="7f67d978-5058-4d87-bcf4-f40bd77450a4">
+			<ee:variables>
+				<ee:set-variable variableName="deviceInfo"><![CDATA[%dw 2.0
+output application/java
+---
+{
+	deviceId: attributes.uriParams.'deviceId'
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="impl-mobile-sys:\put-assistanceapp-device-info:subflow" doc:id="9678ccc5-c7f7-4e34-9044-034734b2c75c" name="impl-mobile-sys:\put-assistanceapp-device-info:subflow"/>
+		<error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="put:\assistanceApp\deviceTokenInfo\(deviceId):application\json:mobile-sapi-config">
+        <ee:transform doc:name="Set Request Params" doc:id="ce30164a-5ae0-4aaf-9db5-7aa5f49839c2">
+			<ee:variables>
+				<ee:set-variable variableName="deviceInfo"><![CDATA[%dw 2.0
+output application/java
+---
+{
+	deviceId: attributes.uriParams.'deviceId'
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="impl-mobile-sys:\put-assistanceapp-device-token-info:subflow" doc:id="54dc4ce9-9282-47e5-b73a-ae897397d55e" name="impl-mobile-sys:\put-assistanceapp-device-token-info:subflow"/>
+		<error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="post:\assistanceApp\lastlogin:application\json:mobile-sapi-config" doc:id="88a3e7fe-5ab5-4aba-bfde-cc46f9b7fff9">
+		<flow-ref doc:name="impl-mobile-sys:\post-lastlogin:subflow" doc:id="ef7c2b00-470e-4090-b6f0-825995641146" name="impl-mobile-sys:\post-lastlogin:subflow"/>
+		<error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="get:\notification:mobile-sapi-config">
+        <ee:transform doc:name="Set Request Params" doc:id="d7c6a1c8-7868-4bf1-babc-1e6388b0eeb9">
+			<ee:variables>
+				<ee:set-variable variableName="individualId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'individualId']]></ee:set-variable>
+				<ee:set-variable variableName="notificationCount" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.'notificationCount']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="impl-mobile-sys:\get-notification:subflow" doc:id="f18544a1-494e-4370-9f5d-d78cbd5b51c9" name="impl-mobile-sys:\get-notification:subflow"/>
+		<error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="post:\notification:application\json:mobile-sapi-config" doc:id="8e095240-ac56-4c1c-a6d1-b7e03900f8a8">
+        <flow-ref doc:name="impl-mobile-sys:\post-notification:subflow" doc:id="f5e7ace8-8840-4268-aeed-5625ac589f12" name="impl-mobile-sys:\post-notification:subflow"/>
+		<error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="delete:\notification:application\json:mobile-sapi-config">
+        <flow-ref doc:name="impl-mobile-sys:\delete-notification:subflow" doc:id="fea3cc56-6d92-4d45-9134-81bac0fad241" name="impl-mobile-sys:\delete-notification:subflow"/>
+        <error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="get:\notification\event:mobile-sapi-config" doc:id="322b5b92-3d46-44b1-835a-9f7a1fa35db6">
+		<set-variable value="#[attributes.queryParams.notificationEventId]" doc:name="notificationEventId" doc:id="52cc7616-34bf-43a3-ab92-e782a03a1eb9" variableName="notificationEventId"/>
+		<flow-ref doc:name="impl-mobile-sys:\get-notification-event:subflow" doc:id="8bde27cf-d735-4da6-aa27-232133c31a5c" name="impl-mobile-sys:\get-notification-event:subflow"/>
+		<error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="post:\notification\event:application\json:mobile-sapi-config">
+		<flow-ref doc:name="impl-mobile-sys:\post-notification-event:subflow" doc:id="e766aad1-68c5-45c0-8a56-411e270902d5" name="impl-mobile-sys:\post-notification-event:subflow"/>
+		<error-handler ref="generic-errorhandler" />
+    </flow>
+    <flow name="put:\notification\event:application\json:mobile-sapi-config">
+        <flow-ref doc:name="impl-mobile-sys:\put-notification-event:subflow" doc:id="ed2c3c62-e492-477d-b3fd-53b7b6a2dc78" name="impl-mobile-sys:\put-notification-event:subflow"/>
+        <error-handler ref="generic-errorhandler" />
+    </flow>
+</mule>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="isos-mssql-sys:\put-assistanceapp-device-token-info:flow" doc:id="bf84c46c-d3d7-49ed-96ac-1c4d03c72cde">
+		<logger level="INFO" doc:name="Log Start MS SQL Put Assistance App Device Token Info" doc:id="6063d9ed-567f-4074-997a-7415ab6b0f2a" message="#[vars.correlationid]  |  Log Start MS SQL Put Assistance App Device Token Info | #[payload]" category="${log.package.any}" />
+		<db:stored-procedure doc:name="MS SQL SP Put Assistance App Device Token Info" doc:id="258e80c1-becc-40c4-8ea2-22c57dd1f5d8" config-ref="isos-mssql-config">
+			<error-mapping sourceType="DB:CONNECTIVITY" targetType="TTDB:CONNECTIVITY" /> <!--TODO Remove -CONTINUE when SP is available-->
+            <error-mapping targetType="TTDB:GENERAL" /> <!--TODO Remove -CONTINUE when SP is available-->
+			<db:sql ><![CDATA[${isos-mssql.deviceinfo.put-assistanceapp-devicetokeninfo}]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"DeviceID": vars.deviceInfo.deviceId,
+	"AppID": payload.appId,
+	"Token": payload.token
+}]]]></db:input-parameters>
+		</db:stored-procedure>
+		<logger level="INFO" doc:name="Log End MS SQL Put Assistance App Device Token Info" doc:id="b4736231-ae13-4701-b404-43f6688c5cd7" message="#[vars.correlationid]  |  Log End MS SQL Put Assistance App Device Token Info | Query Response: #[payload]" category="${log.package.any}" />
+		<error-handler ref="platform-errorhandler"/>
+	</flow>
+</mule>

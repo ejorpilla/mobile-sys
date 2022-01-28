@@ -1,0 +1,10 @@
+{
+   "notificationEvent":{
+      "notificationEventId":1,
+      "eventName":"Event Name",
+      "eventDataTags": "[{ConversationID}]",
+      "eventTranslationTags": "CHAT_NEW_CHAT_MESSAGE",
+      "isActive":true,
+      "insertedBy":""
+   }
+}

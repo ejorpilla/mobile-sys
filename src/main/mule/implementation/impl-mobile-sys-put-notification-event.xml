@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<sub-flow name="impl-mobile-sys:\put-notification-event:subflow" doc:id="092fb5ff-bb0b-46bb-818b-b54d77e167fd" >
+		<logger level="DEBUG" doc:name="Log Start Put Notification Event" doc:id="07a104fc-de38-4b5e-8858-6a6f380e8d7f" message="#[vars.correlationid]  |  Log Start Put Notification Event | Request Payload: #[payload]" category="${log.package.any}" />
+		<ee:transform doc:name="Initialize Parameters" doc:id="236afefd-cabb-4983-83c0-5cd8df15f461">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="vAssistanceAppTableVariableForNotificationRead"><![CDATA[%dw 2.0
+output application/java
+---
+{
+	tvpName: "AssistanceAppTableVariableForNotificationRead"
+} as Object {
+	class: "com.microsoft.sqlserver.jdbc.SQLServerDataTable"
+}]]></ee:set-variable>
+				<ee:set-variable variableName="notificationEvents" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.notificationEvents default []]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="impl-mobile-sys:\put-notification-event:\initialize-tvp:subflow" doc:id="8e283a95-1c02-4cc0-83d2-56e7d9e52250" name="impl-mobile-sys:\put-notification-event:\initialize-tvp:subflow"/>
+		<flow-ref doc:name="impl-mobile-sys:\put-notification-event:\update-tvp:subflow" doc:id="9a7e6b41-4e04-473f-8f07-fd8b3d6d1870" name="impl-mobile-sys:\put-notification-event:\update-tvp:subflow"/>
+		<flow-ref doc:name="isos-mssql-sys:\put-notification-event:flow" doc:id="52a2e73d-1618-4c60-ae28-d277148b8f7b" name="isos-mssql-sys:\put-notification-event:flow"/>
+		<ee:transform doc:name="Set Response Payload" doc:id="f638cf2b-ec26-410a-84be-68ac6021bcee" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "tracking-id": vars.correlationId,
+   "modifiedCount": (payload.resultSet1[0]."UpdatedRecords") default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Log End Put Notification Event" doc:id="25cd29eb-d826-4215-8b71-ea1574df8f83" message="#[vars.correlationid]  |  Log End Put Notification Event | Response Payload: #[payload]" category="${log.package.any}" />
+	</sub-flow>
+	<sub-flow name="impl-mobile-sys:\put-notification-event:\initialize-tvp:subflow" doc:id="45ab6afe-3d33-42af-8652-b27f8a72efe8" >
+		<logger level="DEBUG" doc:name="Log Start Initialize Put Notification Event Table Valued Parameter" doc:id="fc8b32e3-010b-4a47-85bd-39b9771dc48f" message="#[vars.correlationid]  |  Log Start Initialize Put Notification Event Table Valued Parameter" category="${log.package.any}" />
+		<java:invoke doc:name="Add NotificationCenterID Column" doc:id="2f376713-d16a-48ca-bb0a-af2272d0f6b9" instance="#[vars.vAssistanceAppTableVariableForNotificationRead]" class="com.microsoft.sqlserver.jdbc.SQLServerDataTable" method="addColumnMetadata(String,int)">
+			<java:args><![CDATA[#[{arg0: "NotificationCenterID", arg1: 2}]]]></java:args>
+		</java:invoke>
+		<java:invoke method="addColumnMetadata(String,int)" doc:name="Add NoticationReadInd Column" doc:id="c45eeb40-30b5-412d-b5d3-5d1bee700cf5" instance="#[vars.vAssistanceAppTableVariableForNotificationRead]" class="com.microsoft.sqlserver.jdbc.SQLServerDataTable">
+			<java:args><![CDATA[#[{arg0: "NoticationReadInd", arg1: 2}]]]></java:args>
+		</java:invoke>
+		<logger level="DEBUG" doc:name="Log End Initialize Put Notification Event Table Valued Parameter" doc:id="3a2128b7-caa6-43fc-bfdb-2f627ed01dd6" message="#[vars.correlationid]  |  Log End Initialize Put Notification Event Table Valued Parameter" category="${log.package.any}" />
+	</sub-flow>
+	<sub-flow name="impl-mobile-sys:\put-notification-event:\update-tvp:subflow" doc:id="eb2e9c0e-b600-406d-9986-fcf424d8a961" >
+		<logger level="DEBUG" doc:name="Log Start Update Put Notification Event Table Valued Parameter" doc:id="eec9a311-f034-4f50-b82f-a2ed2af59226" message="#[vars.correlationid]  |  Log Start Update Put Notification Event Table Valued Parameter" category="${log.package.any}" />
+		<foreach doc:name="For Each" doc:id="b2318ceb-3469-480a-a0d0-2f510b9d9a01" collection="#[vars.notificationEvents]">
+			<ee:transform doc:name="vAssistanceAppTableVariableForNotificationReadRow" doc:id="9293a3cb-3806-4a00-9613-fa4a81178547" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="vAssistanceAppTableVariableForNotificationReadRow" ><![CDATA[%dw 2.0
+output application/java
+---
+[payload.notificationCenterId,if(payload.notificationReadInd) 1 else 0]]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<java:invoke doc:name="Add Row" doc:id="49ed0f5f-b59b-44ee-9211-4b49b96917ce" instance="#[vars.vAssistanceAppTableVariableForNotificationRead]" class="com.microsoft.sqlserver.jdbc.SQLServerDataTable" method="addRow(java.lang.Object[])">
+				<java:args><![CDATA[#[{arg0: vars.vAssistanceAppTableVariableForNotificationReadRow}]]]></java:args>
+			</java:invoke>
+		</foreach>
+		<logger level="DEBUG" doc:name="Log End Update Put Notification Event Table Valued Parameter" doc:id="c046d1c6-3fec-4b96-90db-b5d9463a9cc1" message="#[vars.correlationid]  |  Log End Update Put Notification Event Table Valued Parameter | TVP Value: #[vars.vAssistanceAppTableVariableForNotificationRead]" category="${log.package.any}" />
+	</sub-flow>
+</mule>

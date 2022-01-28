@@ -1,0 +1,28 @@
+log:
+  package:
+    any:  "com.isos.mobile-sapi.any"
+    exception: "com.isos.mobile-sapi.exception"
+    audit: "com.isos.mobile-sapi.audit"
+    
+common:
+  json-header: "application/json"
+  response:
+    timeout: "30000"
+    
+mobile-sapi:
+  allowedmethods: "GET, PUT, POST, DELETE"
+    
+isos-mssql:
+  deviceinfo:
+    put-assistanceapp-deviceinfo: "{ call InsertOrUpdateAssistanceAppDeviceInformation(:DeviceID, :Platform, :Model, :OSVersion, :OSLocationServices, :OSPushEnabled, :IndividualID, :SalesforceAccountID, :Locale, :AECEnabled, :AccountAECEnabled) }"
+    put-assistanceapp-devicetokeninfo: "{ call dbo.spInsertOrUpdateAssistanceAppDeviceTokenInformation (:DeviceID, :AppID, :Token) }"
+  notification:
+    get-notification-by-individual-id: "{ call dbo.spAssistanceAppGetNotifications (:IndividualID) }"
+    get-notification-by-individual-id-and-notification-count: "{ call dbo.spAssistanceAppGetNotifications (:IndividualID, :NotificationCount) }"
+    post-notification: "{ call dbo.spAssistanceAppSaveNotification  (:NotificationCenterID, :IndividualID, :NotificationEventID, :NotificationMessage, :NotificationDataTags, :NotificationTranslationTags, :NoticationReadInd, :InsertedBy) }"
+    delete-notification: "{ call spAssistanceAppDeleteNotifications (:IndividualID, :NotificationCenterID_Table) }"
+    get-notification-event: "{ call dbo.spAssistanceAppGetNotificationEvent  (:NotificationEventID) }"
+    post-notification-event: "{ call dbo.spAssistanceAppSaveNotificationEvent (:NotificationEventID, :EventName, :IsActive, :EventDataTags, :EventTranslationTags, :InsertedBy) }"
+    put-notification-event: "{ call spAssistanceAppReadNotifications (:Table) }"
+  lastlogin:
+    post-lastlogin: "{ call dbo.spAssistanceAppDeviceInsertLastLogin (:DeviceID, :LastLogindatetime, :AppVersion, :IndividualID, :PartyID) }"

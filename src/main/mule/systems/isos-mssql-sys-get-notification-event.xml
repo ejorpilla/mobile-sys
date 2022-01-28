@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="isos-mssql-sys:\get-notification-event:flow" doc:id="40c430a8-bdf0-46f6-ba17-053a700a33e4">
+		<logger level="INFO" doc:name="Log Start MS SQL Get Notification Event" doc:id="25dc4753-7159-4d6d-a9e1-8c57b05db661" message="#[vars.correlationid]  |  Log Start MS SQL Get Notification Event | #[payload]" category="${log.package.any}" />
+		<db:stored-procedure doc:name="MS SQL SP Get Notification Event" doc:id="39dde75b-4c26-4a3e-a836-8049586c5765" config-ref="isos-mssql-config">
+			<error-mapping sourceType="DB:CONNECTIVITY" targetType="TTDB:CONNECTIVITY" />
+			<error-mapping targetType="TTDB:GENERAL" />
+			<db:sql><![CDATA[${isos-mssql.notification.get-notification-event}]]></db:sql>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+		</db:stored-procedure>
+		<logger level="INFO" doc:name="Log End MS SQL Get Notification Event" doc:id="cf36f386-5f3a-4fd3-89ad-fc0a5553a248" message="#[vars.correlationid]  |  Log End MS SQL Get Notification Event | Query Response: #[payload]" category="${log.package.any}" />
+		<error-handler ref="platform-errorhandler"/>
+	</flow>
+</mule>

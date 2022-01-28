@@ -1,0 +1,15 @@
+mobile-sapi:
+  https:
+    host: "0.0.0.0"
+    port: "8092"
+  keystore:
+    path: "security/keystore/keystore.jks"
+  autodiscovery: "16427293"
+  basepath: "/api/sys/*"
+
+isos-mssql:
+  deviceinfo:
+    host: "172.26.172.27"
+    port: "1433"
+    dbname: "mobileMiddleware"
+ 

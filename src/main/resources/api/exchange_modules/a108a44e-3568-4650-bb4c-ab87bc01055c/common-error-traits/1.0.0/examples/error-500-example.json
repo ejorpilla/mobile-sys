@@ -1,0 +1,13 @@
+{
+  "source-id": "myassist",
+  "tracking-id": "ae07e541-a48e",
+  "code": 500,
+  "message": "Internal Server Error",
+  "errors": [{
+     "id": "S0101",
+     "severity": "critical",
+     "target-resource": "https://gis.something.com/<resource-uri>",
+     "message": "Textual high level description of the error",
+     "httpStatus": 404
+  }]
+}

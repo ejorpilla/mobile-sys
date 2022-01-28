@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd">
+	<import doc:name="Import" doc:id="21307226-5284-4dc0-8937-e30f9e2f9744" file="common-isos-error-handler.xml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="add485c2-53f2-4527-b492-f71a5765fa35" file="configs/${api.env}.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="f6f648ae-74d9-4c2d-b7f9-4e4458887757" file="configs/global.yaml" />
+	<secure-properties:config name="mobile_sapi_secure_properties_config" doc:name="Secure Properties Config" doc:id="d688514b-3cfb-4154-9d29-e4d10b37f8a3" file="configs/${api.env}.properties" key="${api.secure.key}" />
+	<global-property doc:name="Global Property" doc:id="0601a440-15d9-4239-a457-146aef2e6978" name="api.env" value="local" />
+	<global-property doc:name="Global Property" doc:id="6ce45c59-2893-40c6-a850-62b99a19f532" name="api.secure.key" value="1111111111111111" />
+	<api-gateway:autodiscovery apiId="${mobile-sapi.autodiscovery}" doc:name="API Autodiscovery" doc:id="bdf9125d-6886-4164-b96f-38f8862f8ac6" flowRef="mobile-sapi-main" ignoreBasePath="true"/>
+	<http:listener-config name="mobile-sapi-httplistener-config">
+        <http:listener-connection host="${mobile-sapi.https.host}" port="${mobile-sapi.https.port}" protocol="HTTPS">
+        		<tls:context >
+				<tls:key-store type="jks" path="${mobile-sapi.keystore.path}" keyPassword="${secure::mobile-sapi.https.keystore.password}" password="${secure::mobile-sapi.https.keystore.password}" />
+			</tls:context>
+        </http:listener-connection>
+    </http:listener-config>
+    <db:config name="isos-mssql-config" doc:name="Database Config" doc:id="ecf54fbf-798c-472a-a6ba-162bb77e498d" >
+		<db:mssql-connection host="${isos-mssql.deviceinfo.host}" user="${secure::isos-mssql.deviceinfo.user}" password="${secure::isos-mssql.deviceinfo.password}" databaseName="${isos-mssql.deviceinfo.dbname}" port="${isos-mssql.deviceinfo.port}"/>
+	</db:config>
+</mule>

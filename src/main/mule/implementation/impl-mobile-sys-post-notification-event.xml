@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="impl-mobile-sys:\post-notification-event:subflow" doc:id="092fb5ff-bb0b-46bb-818b-b54d77e167fd" >
+		<logger level="DEBUG" doc:name="Log Start Post Notification Event" doc:id="07a104fc-de38-4b5e-8858-6a6f380e8d7f" message="#[vars.correlationid]  |  Log Start Post Notification Event | Request Payload: #[payload]" category="${log.package.any}" />
+		<ee:transform doc:name="Set Request Payload" doc:id="236afefd-cabb-4983-83c0-5cd8df15f461" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "NotificationEventID": payload.notificationEvent.notificationEventId,
+  "EventName": payload.notificationEvent.eventName,
+  "EventDataTags": payload.notificationEvent.eventDataTags,
+  "EventTranslationTags": payload.notificationEvent.eventTranslationTags,
+  "IsActive": if(payload.notificationEvent.isActive) 1 else 0,
+  "InsertedBy": payload.notificationEvent.insertedBy
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="isos-mssql-sys:\post-notification-event:flow" doc:id="52a2e73d-1618-4c60-ae28-d277148b8f7b" name="isos-mssql-sys:\post-notification-event:flow"/>
+		<ee:transform doc:name="Set Response Payload" doc:id="f638cf2b-ec26-410a-84be-68ac6021bcee" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "tracking-id": vars.correlationId,
+   "modifiedCount": (payload.resultSet1[0]."") default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Log End Post Notification Event" doc:id="25cd29eb-d826-4215-8b71-ea1574df8f83" message="#[vars.correlationid]  |  Log End Post Notification Event | Response Payload: #[payload]" category="${log.package.any}" />
+	</sub-flow>
+</mule>

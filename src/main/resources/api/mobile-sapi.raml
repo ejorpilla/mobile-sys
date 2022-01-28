@@ -1,0 +1,142 @@
+#%RAML 1.0
+title: mobile-sapi
+
+uses:
+  isos-commons: exchange_modules/a108a44e-3568-4650-bb4c-ab87bc01055c/isos-commons-library/2.0.0/isos-commons-library.raml
+
+resourceTypes:
+  standard-resource:
+    is: [ isos-commons.traceable, isos-commons.has-client-credentials, isos-commons.has-error ]
+
+mediaType: application/json
+
+types:
+  id:
+    type: string
+    pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+
+/assistanceApp:
+  /deviceInfo:
+    /{deviceId}:
+      type: standard-resource
+      uriParameters:
+        deviceId:
+          type: string
+          required: true
+          minLength: 1
+          maxLength: 50
+      put:
+        description: Insert Or Update Assistance App Device Information by Device Id
+        body:
+          application/json:
+            type: !include datatypes/request-put-assistanceapp-deviceinfo-by-deviceid.raml
+            example: !include examples/request-put-assistanceapp-deviceinfo-by-deviceid.json
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include examples/response-put-assistanceapp-deviceinfo-by-deviceid.json
+  /deviceTokenInfo:
+    /{deviceId}:
+      type: standard-resource
+      uriParameters:
+        deviceId:
+          type: string
+          required: true
+      put:
+        description: Insert Or Update Assistance App Device Token Information Device Id
+        body:
+          application/json:
+            type: !include datatypes/request-put-assistanceapp-devicetokeninfo-by-deviceid.raml
+            example: !include examples/request-put-assistanceapp-devicetokeninfo-by-deviceid.json
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include examples/response-put-assistanceapp-devicetokeninfo-by-deviceid.json
+  /lastlogin:
+    type: standard-resource
+    post:
+      description: The Insert Assistance App Device Last Login API operation will create App Device Last Login record.
+      body:
+        application/json:
+          type: !include datatypes/request-post-lastlogin.raml
+          example: !include examples/request-post-lastlogin.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/response-post-lastlogin.json
+/notification:
+  type: standard-resource
+  get:
+    description: The Get Notification API operation will Get Notification to Mobile Middleware DB
+    queryParameters:
+      individualId:
+        type: id
+        required: true
+      notificationCount:
+        type: number
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/response-get-notification.json
+  post:
+    description: The Post Notification API operation will Upsert Notification from Mobile Middleware DB
+    body:
+      application/json:
+        type: !include datatypes/request-post-notification.raml
+        example: !include examples/request-post-notification.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/response-post-notification.json
+  delete:
+    description: The Delete Notification API operation will Delete Notification from Mobile Middleware DB
+    body:
+      application/json:
+        type: !include datatypes/request-delete-notification.raml
+        example: !include examples/request-delete-notification.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/response-delete-notification.json
+  /event:
+    type: standard-resource
+    get:
+      description: The Get Notification Event API operation will Get Notification Events to Mobile Middleware DB
+      queryParameters:
+        notificationEventId:
+          type: number
+          required: false
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/response-get-notification-event.json
+    put:
+      description: The Put Notification Event API operation will mark notification as Read on Mobile Middleware DB
+      body:
+        application/json:
+          type: !include datatypes/request-put-notification-event.raml
+          example: !include examples/request-put-notification-event.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/response-put-notification-event.json
+    post:
+      description: The Post Notification Event API operation will Upsert Notification Events to Mobile Middleware DB
+      body:
+        application/json:
+          type: !include datatypes/request-post-notification-event.raml
+          example: !include examples/request-post-notification-event.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/response-post-notification-event.json

@@ -1,0 +1,16 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  notification:
+    type: object
+    properties:
+      notificationCenterIds:
+        type: array
+        required: true
+        minItems: 1
+        items:
+          type: number
+      individualId:
+        type: string
+        required: true
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$

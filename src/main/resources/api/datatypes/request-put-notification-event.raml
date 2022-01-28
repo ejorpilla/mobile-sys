@@ -1,0 +1,15 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  notificationEvents:
+    type: array
+    items:
+      type: object
+      properties:
+        notificationCenterId:
+          type: number
+          required: true
+        notificationReadInd:
+          type: boolean
+          required: true
+   

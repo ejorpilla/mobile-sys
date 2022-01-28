@@ -1,0 +1,12 @@
+{
+   "notificationEvents":[
+      {
+         "notificationCenterId":1,
+         "notificationReadInd":true
+      },
+      {
+         "notificationCenterId":2,
+         "notificationReadInd":false
+      }
+   ]
+}

@@ -1,0 +1,10 @@
+#%RAML 1.0 Library
+
+usage: |
+  This library contains all fragments that are applicable and reusable across all ISOS Rebuild and Migration APIs
+
+
+traits:
+  has-client-credentials: !include exchange_modules/a108a44e-3568-4650-bb4c-ab87bc01055c/common-client-credential-traits/1.0.0/common-client-credential-traits.raml
+  has-error: !include exchange_modules/a108a44e-3568-4650-bb4c-ab87bc01055c/common-error-traits/1.0.0/common-error-traits.raml
+  traceable: !include exchange_modules/a108a44e-3568-4650-bb4c-ab87bc01055c/common-traceable-traits/2.0.0/common-traceable-traits.raml

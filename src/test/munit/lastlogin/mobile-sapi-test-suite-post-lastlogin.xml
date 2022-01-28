@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="mobile-sapi-test-suite-post-lastlogin.xml" />
+	<import doc:name="Import" doc:id="b47e327e-7adc-46ff-9446-b05b682ff104" file="munit-global.xml" />
+	<munit:before-test name="mobile-sapi-test-suite-post-lastlogin:before-test" doc:id="13c56b81-a6fe-4e4d-a27c-c32015f6cf8f" >
+		<flow-ref doc:name="munit-global:\set-metadata" doc:id="1104d65a-efa3-4496-ac73-73621b906130" name="munit-global:\set-metadata"/>
+	</munit:before-test>
+	<munit:test name="mobile-sapi-test-suite-post:\lastlogin:application\json:test-success" doc:id="e9e8d6ef-05d1-4196-9cf0-6ac4a63881a0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock - MS SQL SP Post Last Login" doc:id="535b80ae-fd79-4cc8-ad6d-ae23828d1e9c" processor="db:stored-procedure">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="MS SQL SP Post Last Login" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="6323bbae-2075-4a20-bfe3-59ecb4cdb35d">
+				<munit:payload value='{&#10;  "deviceId": "51e707deec8a1a64",&#10;  "lastLogin": "2015-07-04T21:00:00",&#10;  "appVersion": "1.0",&#10;  "individualId":"56E0268E-7296-41BB-8761-BF5B21A37A5B",&#10;  "partyId":"FRA_264644ea-2892-425a-8fb2-fa9018b1cdf0"&#10;}' encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="post:\assistanceApp\lastlogin:application\json:mobile-sapi-config" doc:id="f8a9ce5c-613b-49f6-9e0c-7ff029b73584" name="post:\assistanceApp\lastlogin:application\json:mobile-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call - Log End Post Last Login" doc:id="be375546-1da4-4c3f-917a-79aca3b68a27" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log End Post Last Login" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mobile-sapi-test-suite-post:\lastlogin:test-general-error" doc:id="ec188bd3-5943-4fc2-9d1b-7b5c9c142298" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock - MS SQL SP Post Last Login" doc:id="37e70d0b-af18-40a3-92c2-9d2893f7aac6" processor="db:stored-procedure" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="MS SQL SP Post Last Login" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="#['HTTP:INTERNAL_SERVER_ERROR']" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0c85ee57-19ca-4a48-a130-697ff15ff88e">
+				<munit:payload value='{&#10;  "deviceId": "51e707deec8a1a64",&#10;  "lastLogin": "2015-07-04T21:00:00",&#10;  "appVersion": "1.0",&#10;  "individualId":"56E0268E-7296-41BB-8761-BF5B21A37A5B",&#10;  "partyId":"FRA_264644ea-2892-425a-8fb2-fa9018b1cdf0"&#10;}' encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="post:\assistanceApp\lastlogin:application\json:mobile-sapi-config" doc:id="5f53ef8d-b363-4da1-bf4e-0afe6b023184" name="post:\assistanceApp\lastlogin:application\json:mobile-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call Common Error Handler" doc:id="5967c0a2-1d62-4d62-83dc-f87a99de8c6e" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Internal Server Error Payload, HTTP Status Var" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+</mule>

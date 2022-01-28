@@ -1,0 +1,10 @@
+%dw 2.0
+
+type auto_eb2e9c0e_b600_406d_9986_fcf424d8a961_Output_Variables_notificationEvents = {
+  insertedBy: String, 
+  notificationEventId?: Number, 
+  eventName: String, 
+  isActive: Boolean, 
+  _?: Any
+} | Array<Nothing>
+

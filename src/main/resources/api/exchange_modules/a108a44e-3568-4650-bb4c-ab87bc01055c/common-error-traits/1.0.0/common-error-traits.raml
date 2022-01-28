@@ -1,0 +1,53 @@
+#%RAML 1.0 Trait
+
+responses:
+  400:
+    description: |
+      This code is used when an error has occurred with cause related to the user's request data.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-400-example.json
+  401:
+    description: |
+      This code is used when the provided credentials such as clientId or clientSecret is incorrect.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-401-example.json
+  403:
+    description: |
+      This code is used when the provided credentials such as clientId or clientSecret is correct but the necessary permissions are not satisfied.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-403-example.json
+  404:
+    description: |
+      This code is used when the provided resource path cannot be found
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-404-example.json
+  405:
+    description: This code is used when the requested operation is not yet implemented.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-405-example.json
+  406:
+    description: This code is used when the response type is different from the request's specified accept header.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-406-example.json
+  415:
+    description: This code is used when the provided Content-Type or Content-Encoding headers cannot be fulfilled by this service.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-415-example.json
+  500:
+    description: |
+      This code is used when an internal server error has occurred related to the technical processing of the request.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-500-example.json
+  501:
+    description: This code is used when the target resource path has not yet been fully implemented.
+    body:
+      type: !include datatypes/error-datatype.raml
+      example: !include examples/error-501-example.json

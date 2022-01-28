@@ -1,0 +1,12 @@
+{
+   "notification":{
+         "notificationCenterId":1,
+         "individualId":"56E0268E-7296-41BB-8761-BF5B21A37A5B",
+         "notificationEventId":1,
+         "notificationMessage":"notificationMessage",
+         "notificationDataTags":"notificationDataTags",
+         "notificationTranslationTags":"notificationTranslationTags",
+         "noticationReadInd":true,
+         "insertedBy":"2021-01-01"
+      }
+}

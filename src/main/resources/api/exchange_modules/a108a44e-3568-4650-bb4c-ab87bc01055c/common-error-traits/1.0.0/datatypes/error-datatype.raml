@@ -1,0 +1,25 @@
+#%RAML 1.0 DataType
+
+type: object
+properties:
+  source-id:
+    type: string
+    enum: [backoffice, myassist]
+  tracking-id: string
+  code: integer
+  message: string
+  errors:
+    type: array
+    required: false
+    items:
+      type: object
+      properties:
+        id: string
+        severity: 
+          type: string
+          enum: [critical, major, minor]
+        target-resource: string
+        message: string
+        httpStatus: 
+          type: integer
+          required: false

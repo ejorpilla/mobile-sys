@@ -1,0 +1,6 @@
+{
+   "source-id": "myassist",
+   "tracking-id": "ae07e541-a48e",
+   "code": 400,
+   "message": "Missing required field: username"
+}
